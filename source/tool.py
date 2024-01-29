@@ -5,27 +5,61 @@ from . import level
 
 class Control():
     def __init__(self):
-
-        pass
+        self.screen = pg.display.get_surface()
+        self.done = False
+        self.clock = pg.time.Clock()
+        self.fps = 60
+        self.level = level.level()
+        self.mouse_pos = None
 
     def update(self):
-        pass
+        self.current_time = pg.time_get_ticks()
+        self.level.update(self.screen, self.current_time, self.mouse_pos)
+        selfe.mouse.pos = None
 
     def event_loop(self):
-        pass
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                self.done = True
+            elif event.type == pg.MOUSEBUTTONDOWN:
+                self.mouse_pos = pg.mouse.get_pos()
 
     def main(self):
         # 程序主循环
-        pass
+        while not self.done:
+            self.event_loop()
+            self.update()
+            pg.display.update()
+            self.clock.tick(self.fps)
 
 def getImage(sheet, x, y, width, height, colorkey, scale):
-    pass
+    image = pg.Surface([width, height])
+    rect = image.get_rect()
+    image.blit(sheet,(0,0),(x,y,width,height))
+    image.set_colorkey(colorkey)
+    image = pg.transform.scale(image,(int(rect.width*scale),int(rect.height*scale)))
+    return image
 
 def loadAllGraphics(directory, colorkey=c.WHITE, accept=('.png', '.jpg', '.bmp', '.gif')):
-    pass
+    graphics = {}
+    for pic in os.listdir(directory):
+        name,ext = os.path.splitext(pic)
+        if ext.lower() in accept:
+            img = pg.image.load(os.path.join(directory,pic))
+            if img.get_alpha():
+                img = img.convert_alpha()
+            else:
+                img = img.convert()
+                img.set_colorkey(colorkey)
+            graphics[name] = img
+    return  graphics
 
 def getMapGridImage():
-    pass
+    grid_images = {}
+    image_rect_dict = {c.MAP_STONE:(0,16,16,16),c.MAP_GRASS:(0,0,16,16)}
+    for type, rect in image_rect_dict():
+        grid_images[type] = getImage(GFX['tile'].*rect, c.WHITE,3)
+    return  grid_images
 
 # pygame 的初始化
 pg.init()
